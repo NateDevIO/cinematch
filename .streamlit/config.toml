@@ -1,0 +1,36 @@
+# Streamlit Configuration
+# Customize the look and feel of your app
+
+[theme]
+# Primary color (buttons, links, highlights)
+primaryColor = "#E50914"
+
+# Background color
+backgroundColor = "#141414"
+
+# Secondary background color (sidebar, widgets)
+secondaryBackgroundColor = "#2D2D2D"
+
+# Text color
+textColor = "#FFFFFF"
+
+# Font family
+font = "sans serif"
+
+[server]
+# Server settings
+headless = true
+port = 8501
+enableXsrfProtection = true
+
+[browser]
+# Browser settings
+gatherUsageStats = false
+
+[runner]
+# Execution settings
+magicEnabled = true
+fastReruns = true
+
+# Optional: Set maximum message size (in MB)
+# maxMessageSize = 200
