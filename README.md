@@ -26,7 +26,18 @@ This project demonstrates:
 - **Software Engineering**: Modular code architecture with separation of concerns
 - **User Experience**: Intuitive interface with visual feedback and explanations
 
-## 🚀 Quick Start
+## �️ Tech Stack
+
+| Category | Technologies |
+|----------|-------------|
+| **Frontend** | Streamlit, HTML/CSS |
+| **Backend** | Python 3.11 |
+| **ML/Data Science** | scikit-learn, pandas, NumPy |
+| **APIs** | TMDB API |
+| **DevOps** | GitHub Actions (automated cache updates) |
+| **Deployment** | Streamlit Cloud |
+
+## �🚀 Quick Start
 
 ### Prerequisites
 

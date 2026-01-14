@@ -108,7 +108,7 @@ class TMDBDataLoader:
     
     def load_popular_movies(self, num_movies: int = 500) -> pd.DataFrame:
         """
-        Load popular movies from TMDB.
+        Load popular movies from TMDB or local cache.
         
         Args:
             num_movies: Target number of movies to load
@@ -116,6 +116,19 @@ class TMDBDataLoader:
         Returns:
             DataFrame with movie information
         """
+        # First, check if we have a local cache file
+        import json
+        cache_file = "movies_cache.json"
+        
+        if os.path.exists(cache_file):
+            try:
+                with open(cache_file, 'r', encoding='utf-8') as f:
+                    cached_movies = json.load(f)
+                st.success(f"⚡ Loaded {len(cached_movies)} movies from cache (instant!)")
+                return pd.DataFrame(cached_movies)
+            except Exception as e:
+                st.warning(f"Cache file corrupted, fetching from API... ({e})")
+        
         if not self.api_key:
             # Fallback to sample dataset if no API key
             return self._load_sample_dataset()

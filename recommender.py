@@ -99,15 +99,15 @@ class MovieRecommender:
         selected_genres = set(selected_genres)
         
         # Calculate Jaccard similarity for each movie
-        for i, row in self.movie_data.iterrows():
+        for pos, (i, row) in enumerate(self.movie_data.iterrows()):
             movie_genres = set(row['genres']) if isinstance(row['genres'], list) else set()
             
             if not movie_genres or not selected_genres:
-                similarities[i] = 0
+                similarities[pos] = 0
             else:
                 intersection = len(selected_genres.intersection(movie_genres))
                 union = len(selected_genres.union(movie_genres))
-                similarities[i] = intersection / union if union > 0 else 0
+                similarities[pos] = intersection / union if union > 0 else 0
         
         return similarities
     
@@ -131,9 +131,9 @@ class MovieRecommender:
                 selected_directors.add(director)
         
         # Check each movie's director
-        for i, row in self.movie_data.iterrows():
+        for pos, (i, row) in enumerate(self.movie_data.iterrows()):
             if pd.notna(row['director']) and row['director'] in selected_directors:
-                similarities[i] = 1.0
+                similarities[pos] = 1.0
         
         return similarities
     
@@ -158,25 +158,27 @@ class MovieRecommender:
         selected_cast = set(selected_cast)
         
         # Calculate overlap for each movie
-        for i, row in self.movie_data.iterrows():
+        for pos, (i, row) in enumerate(self.movie_data.iterrows()):
             movie_cast = set(row['cast'][:5]) if isinstance(row['cast'], list) else set()
             
             if not movie_cast or not selected_cast:
-                similarities[i] = 0
+                similarities[pos] = 0
             else:
                 overlap = len(selected_cast.intersection(movie_cast))
-                similarities[i] = overlap / 5.0  # Normalize by max possible overlap
+                similarities[pos] = overlap / 5.0  # Normalize by max possible overlap
         
         return similarities
     
     def _generate_explanation(self, selected_movies: List[str], 
-                            recommended_movie: pd.Series,
-                            similarity_components: Dict[str, float]) -> str:
+                              movie_indices: List[int],
+                              recommended_movie: pd.Series,
+                              similarity_components: Dict[str, float]) -> str:
         """
-        Generate human-readable explanation for recommendation.
+        Generate a human-readable explanation for why a movie was recommended.
         
         Args:
-            selected_movies: List of movie titles user selected
+            selected_movies: List of selected movie titles
+            movie_indices: Indices of selected movies in the dataframe
             recommended_movie: Series containing recommended movie data
             similarity_components: Dictionary with component similarities
             
@@ -185,16 +187,62 @@ class MovieRecommender:
         """
         explanations = []
         
+        # Get recommended movie's attributes
+        rec_director = recommended_movie.get('director')
+        rec_cast = set(recommended_movie.get('cast', [])[:5]) if isinstance(recommended_movie.get('cast'), list) else set()
+        rec_genres = set(recommended_movie.get('genres', [])) if isinstance(recommended_movie.get('genres'), list) else set()
+        
+        # Track which selected movie matches for each component
+        director_match_movie = None
+        cast_match_movie = None
+        genre_match_movie = None
+        best_genre_overlap = []
+        
+        # Check each selected movie for matches
+        for i, idx in enumerate(movie_indices):
+            selected_movie_data = self.movie_data.iloc[idx]
+            sel_director = selected_movie_data.get('director')
+            sel_cast = set(selected_movie_data.get('cast', [])[:5]) if isinstance(selected_movie_data.get('cast'), list) else set()
+            sel_genres = set(selected_movie_data.get('genres', [])) if isinstance(selected_movie_data.get('genres'), list) else set()
+            
+            # Director match
+            if rec_director and sel_director and rec_director == sel_director:
+                director_match_movie = selected_movies[i]
+            
+            # Cast overlap
+            if rec_cast and sel_cast and len(rec_cast.intersection(sel_cast)) > 0:
+                cast_match_movie = selected_movies[i]
+            
+            # Genre overlap - track best match
+            genre_overlap = rec_genres.intersection(sel_genres)
+            if len(genre_overlap) > len(best_genre_overlap):
+                best_genre_overlap = list(genre_overlap)
+                genre_match_movie = selected_movies[i]
+        
         # Find strongest component
         strongest = max(similarity_components.items(), key=lambda x: x[1])
         
-        # Generate explanation based on strongest signal
-        if strongest[0] == 'genre' and strongest[1] > 0.5:
-            shared_genres = recommended_movie['genres'][:2] if isinstance(recommended_movie['genres'], list) else []
-            if shared_genres:
-                explanations.append(f"Shares genres: {', '.join(shared_genres)}")
+        # Determine which movie to attribute the match to based on strongest signal
+        if strongest[0] == 'director' and director_match_movie:
+            matched_movie = director_match_movie
+        elif strongest[0] == 'cast' and cast_match_movie:
+            matched_movie = cast_match_movie
+        elif strongest[0] == 'genre' and genre_match_movie:
+            matched_movie = genre_match_movie
+        elif director_match_movie:
+            matched_movie = director_match_movie
+        elif cast_match_movie:
+            matched_movie = cast_match_movie
+        elif genre_match_movie:
+            matched_movie = genre_match_movie
+        else:
+            matched_movie = selected_movies[0]  # Default to first
         
-        if similarity_components.get('director', 0) > 0:
+        # Generate explanation based on signals
+        if similarity_components.get('genre', 0) > 0.5 and best_genre_overlap:
+            explanations.append(f"Shares genres: {', '.join(best_genre_overlap[:2])}")
+        
+        if similarity_components.get('director', 0) > 0.9:
             explanations.append(f"Same director: {recommended_movie['director']}")
         
         if similarity_components.get('cast', 0) > 0.2:
@@ -206,8 +254,8 @@ class MovieRecommender:
         if not explanations:
             explanations.append("Strong overall match based on multiple factors")
         
-        # Add reference to a selected movie for context
-        base_text = f"Because you liked {selected_movies[0]}"
+        # Use the matched movie in the explanation
+        base_text = f"Because you liked {matched_movie}"
         explanation_text = " → " + "; ".join(explanations)
         
         return base_text + explanation_text
@@ -269,6 +317,7 @@ class MovieRecommender:
                     'similarity_score': combined_similarity[idx],
                     'explanation': self._generate_explanation(
                         selected_titles,
+                        movie_indices,
                         movie,
                         component_scores
                     )
