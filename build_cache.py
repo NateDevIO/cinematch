@@ -218,11 +218,11 @@ def build_cache():
         api_key, "/discover/movie",
         {
             'sort_by': 'vote_average.desc',  # Sort by RATING, not popularity
-            'vote_average.gte': 7.5,         # High ratings only
+            'vote_average.gte': 7.0,         # 7.0+ ratings (expanded from 7.5)
             'vote_count.gte': 100,           # At least 100 votes (filters spam)
             'vote_count.lte': 5000           # But not mega-popular
         },
-        1500, seen_ids  # Get lots of hidden gems
+        3000, seen_ids  # Get lots of hidden gems (expanded from 1500)
     )
     all_movies.extend(hidden_gems)
     print(f"\n      Fetched {len(hidden_gems)} hidden gem movies")
