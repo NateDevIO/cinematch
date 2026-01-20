@@ -169,17 +169,17 @@ def build_cache():
     seen_ids = set()
     
     # 1. TOP RATED MOVIES (includes classics like Shawshank, Godfather, etc.)
-    print("\n[1/6] Fetching Top Rated movies (classics)...")
+    print("\n[1/7] Fetching Top Rated movies (classics)...")
     top_rated = fetch_movies_from_endpoint(
-        api_key, "/movie/top_rated", {}, 500, seen_ids  # Increased from 200
+        api_key, "/movie/top_rated", {}, 1000, seen_ids  # Expanded from 500
     )
     all_movies.extend(top_rated)
     print(f"\n      Fetched {len(top_rated)} top rated movies")
     
     # 2. POPULAR MOVIES (current trending)
-    print("\n[2/6] Fetching Popular movies (trending)...")
+    print("\n[2/7] Fetching Popular movies (trending)...")
     popular = fetch_movies_from_endpoint(
-        api_key, "/movie/popular", {}, 300, seen_ids  # Increased from 200
+        api_key, "/movie/popular", {}, 500, seen_ids  # Expanded from 300
     )
     all_movies.extend(popular)
     print(f"\n      Fetched {len(popular)} popular movies")
@@ -188,8 +188,8 @@ def build_cache():
     print("\n[3/7] Fetching highly voted movies...")
     discover_voted = fetch_movies_from_endpoint(
         api_key, "/discover/movie",
-        {'sort_by': 'vote_count.desc', 'vote_count.gte': 500},  # Lowered from 2000
-        1000, seen_ids  # Increased from 500
+        {'sort_by': 'vote_count.desc', 'vote_count.gte': 500},
+        2000, seen_ids  # Expanded from 1000
     )
     all_movies.extend(discover_voted)
     print(f"\n      Fetched {len(discover_voted)} highly voted movies")
@@ -206,14 +206,29 @@ def build_cache():
                 'primary_release_date.gte': f'{decade_start}-01-01',
                 'primary_release_date.lte': f'{decade_start + 9}-12-31'
             },
-            150, seen_ids  # Increased from 50
+            250, seen_ids  # Expanded from 150
         )
         decades_movies.extend(decade_movies)
     all_movies.extend(decades_movies)
     print(f"\n      Fetched {len(decades_movies)} decade movies")
     
-    # 5. CHRISTMAS/HOLIDAY MOVIES (using keyword search)
-    print("\n[5/7] Fetching Christmas/Holiday movies...")
+    # 5. HIDDEN GEMS (highly rated but less popular movies)
+    print("\n[5/8] Fetching hidden gems (highly rated, less popular)...")
+    hidden_gems = fetch_movies_from_endpoint(
+        api_key, "/discover/movie",
+        {
+            'sort_by': 'vote_average.desc',  # Sort by RATING, not popularity
+            'vote_average.gte': 7.5,         # High ratings only
+            'vote_count.gte': 100,           # At least 100 votes (filters spam)
+            'vote_count.lte': 5000           # But not mega-popular
+        },
+        1500, seen_ids  # Get lots of hidden gems
+    )
+    all_movies.extend(hidden_gems)
+    print(f"\n      Fetched {len(hidden_gems)} hidden gem movies")
+    
+    # 6. CHRISTMAS/HOLIDAY MOVIES (using keyword search)
+    print("\n[6/8] Fetching Christmas/Holiday movies...")
     # TMDB keyword IDs: 207317=christmas, 1445=holiday
     christmas_movies = fetch_movies_from_endpoint(
         api_key, "/discover/movie",
@@ -227,8 +242,8 @@ def build_cache():
     all_movies.extend(christmas_movies)
     print(f"\n      Fetched {len(christmas_movies)} Christmas/Holiday movies")
     
-    # 6. MUST-HAVE CLASSICS (search by title)
-    print("\n[6/7] Adding must-have classic movies...")
+    # 7. MUST-HAVE CLASSICS (search by title)
+    print("\n[7/8] Adding must-have classic movies...")
     must_have_added = 0
     for title in MUST_HAVE_MOVIES:
         movie = search_movie_by_title(api_key, title, seen_ids)

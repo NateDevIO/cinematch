@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CineMatch - AI Movie Recommendations</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🎬</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <!-- Hero Header -->
+    <header class="hero">
+        <h1>🎬 CineMatch</h1>
+        <p class="tagline">Your AI-Powered Movie Recommendation Engine</p>
+        <div class="feature-badges">
+            <span class="badge badge-red">✨ Smart Recommendations</span>
+            <span class="badge badge-purple">🎯 Content-Based Filtering</span>
+            <span class="badge badge-green">📚 4500+ Movies</span>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Loading State -->
+        <div id="loading" class="loading">
+            <div class="spinner"></div>
+            <p>Loading movie database...</p>
+        </div>
+
+        <!-- Main Content (hidden until loaded) -->
+        <div id="main-content" style="display: none;">
+            <!-- Status Message -->
+            <div id="status-message" class="status-message"></div>
+
+            <!-- Step 1: Movie Selection -->
+            <section class="section">
+                <h2>🎯 Step 1: Select Your Favorite Movies</h2>
+                <p>Start typing a movie name to search, then select from the dropdown:</p>
+
+                <div class="selection-controls">
+                    <label for="num-movies">How many movies do you want to select?</label>
+                    <input type="number" id="num-movies" min="1" max="5" value="3">
+                </div>
+
+                <div id="movie-selectors" class="movie-selectors">
+                    <!-- Movie dropdowns will be inserted here -->
+                </div>
+
+                <!-- Selected Movies Display -->
+                <div id="selected-movies" class="selected-movies">
+                    <h3>🎥 Your Selection:</h3>
+                    <div id="selected-movies-grid" class="selected-movies-grid">
+                        <!-- Selected movie cards will be inserted here -->
+                    </div>
+                </div>
+            </section>
+
+            <hr class="divider">
+
+            <!-- Get Recommendations Button -->
+            <button id="get-recommendations" class="btn-primary">
+                🎬 Get Recommendations
+            </button>
+
+            <!-- Recommendations Section -->
+            <section id="recommendations-section" class="section" style="display: none;">
+                <h2>✨ Recommended Movies For You</h2>
+                <p id="recommendations-intro"></p>
+                <div id="recommendations-grid" class="recommendations-grid">
+                    <!-- Recommendation cards will be inserted here -->
+                </div>
+            </section>
+
+            <hr class="divider">
+
+            <!-- How It Works -->
+            <details class="how-it-works">
+                <summary>🤔 How does this work?</summary>
+                <div class="how-it-works-content">
+                    <h3>Content-Based Filtering Algorithm</h3>
+                    <p>This recommender uses <strong>content-based filtering</strong> to find similar movies:</p>
+                    <table>
+                        <tr>
+                            <th>Feature</th>
+                            <th>Weight</th>
+                        </tr>
+                        <tr>
+                            <td>Plot similarity (TF-IDF)</td>
+                            <td>40%</td>
+                        </tr>
+                        <tr>
+                            <td>Genre overlap</td>
+                            <td>30%</td>
+                        </tr>
+                        <tr>
+                            <td>Director match</td>
+                            <td>15%</td>
+                        </tr>
+                        <tr>
+                            <td>Cast overlap</td>
+                            <td>15%</td>
+                        </tr>
+                    </table>
+                    <p><strong>Technologies:</strong> JavaScript, HTML/CSS, TMDB API</p>
+                </div>
+            </details>
+        </div>
+    </main>
+
+    <!-- Watchlist Sidebar -->
+    <aside id="watchlist-sidebar" class="watchlist-sidebar">
+        <button id="toggle-watchlist" class="toggle-watchlist">🔖</button>
+        <div class="watchlist-content">
+            <h3>🔖 My Watchlist</h3>
+            <div id="watchlist-count"></div>
+            <div id="watchlist-items"></div>
+            <button id="clear-watchlist" class="btn-secondary" style="display: none;">🗑️ Clear Watchlist</button>
+        </div>
+    </aside>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built with ❤️ | <a href="https://github.com/NateDevIO/cinematch" target="_blank">View Source Code</a></p>
+        <p class="coded-by">Coded by Nate</p>
+    </footer>
+
+    <script src="recommender.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

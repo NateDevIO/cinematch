@@ -1,107 +1,66 @@
 # 🎬 CineMatch
 
-A portfolio-quality movie recommendation system built with Streamlit, using content-based filtering and machine learning to suggest films based on user preferences.
+A portfolio-quality movie recommendation system using content-based filtering and machine learning to suggest films based on user preferences.
 
 *Coded by Nate*
-
-![App Screenshot](screenshot.png)
-*Add your screenshot here*
 
 ## 🌟 Features
 
 - **Smart Recommendations**: Content-based filtering using TF-IDF and cosine similarity
+- **4500+ Movies**: Comprehensive database including classics, blockbusters, and hidden gems
 - **Rich Metadata**: Integrates with TMDB API for movie posters, cast, and plot information
 - **Explainable AI**: Clear explanations for why each movie was recommended
-- **Flexible Input**: Select 1-5 favorite movies to get personalized suggestions
-- **Professional UI**: Clean, responsive design with visual movie cards
-- **Performance Optimized**: Caching for sub-2-second recommendation generation
+- **Searchable Input**: Type-ahead search to quickly find any movie
+- **Watchlist**: Save movies for later (persisted in browser)
+- **Professional UI**: Dark theme with gradients, animations, and responsive design
+- **Static Hosting**: Pure HTML/CSS/JS - no server required, no sleeping apps
 
 ## 🎯 Technical Highlights
 
 This project demonstrates:
 
 - **Data Science**: Content-based recommendation algorithm with weighted feature engineering
-- **Machine Learning**: TF-IDF vectorization and cosine similarity calculations using scikit-learn
-- **API Integration**: TMDB API for real-time movie data
-- **Software Engineering**: Modular code architecture with separation of concerns
-- **User Experience**: Intuitive interface with visual feedback and explanations
+- **Machine Learning**: TF-IDF vectorization and cosine similarity calculations in JavaScript
+- **API Integration**: TMDB API for movie data and automated weekly updates
+- **Frontend Development**: Vanilla JavaScript with custom searchable dropdowns
+- **DevOps**: GitHub Actions for automated cache updates
 
-## �️ Tech Stack
+## 🛠️ Tech Stack
 
 | Category | Technologies |
 |----------|-------------|
-| **Frontend** | Streamlit, HTML/CSS |
-| **Backend** | Python 3.11 |
-| **ML/Data Science** | scikit-learn, pandas, NumPy |
-| **APIs** | TMDB API |
-| **DevOps** | GitHub Actions (automated cache updates) |
-| **Deployment** | Streamlit Cloud |
+| **Frontend** | HTML5, CSS3, Vanilla JavaScript |
+| **Recommendation Engine** | Custom TF-IDF + Cosine Similarity (JS) |
+| **Data Source** | TMDB API |
+| **DevOps** | GitHub Actions (automated weekly updates) |
+| **Deployment** | Vercel / Netlify / GitHub Pages |
 
-## �🚀 Quick Start
+## 🚀 Quick Start
 
-### Prerequisites
+### Option 1: Static Version (Recommended)
 
-- Python 3.9 or higher
-- TMDB API key (free at [themoviedb.org](https://www.themoviedb.org/settings/api))
+The `cinematch-js` folder contains the pure HTML/CSS/JavaScript version:
 
-### Installation
+```bash
+cd cinematch-js
+python -m http.server 8080
+# Open http://localhost:8080
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/yourusername/movie-recommender.git
-   cd movie-recommender
-   ```
+### Option 2: Streamlit Version (Legacy)
 
-2. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+The root folder contains the original Streamlit version:
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   # Edit .env and add your TMDB API key
-   ```
-
-4. **Run the app**
-   ```bash
-   streamlit run app.py
-   ```
-
-5. **Open in browser**
-   ```
-   http://localhost:8501
-   ```
-
-## 🔧 Configuration
-
-### TMDB API Key
-
-1. Sign up at [TMDB](https://www.themoviedb.org/signup)
-2. Go to Settings → API
-3. Request an API key (choose "Developer" option)
-4. Add to `.env` file:
-   ```
-   TMDB_API_KEY=your_api_key_here
-   ```
-
-### Streamlit Theme
-
-Customize the look in `.streamlit/config.toml`:
-```toml
-[theme]
-primaryColor = "#E50914"
-backgroundColor = "#141414"
-secondaryBackgroundColor = "#2D2D2D"
-textColor = "#FFFFFF"
-font = "sans serif"
+```bash
+pip install -r requirements.txt
+streamlit run app.py
 ```
 
 ## 📊 How It Works
 
 ### Algorithm Overview
 
-The recommendation engine uses **content-based filtering** with the following approach:
+The recommendation engine uses **content-based filtering**:
 
 1. **Feature Extraction**
    - Plot descriptions → TF-IDF vectors
@@ -119,130 +78,67 @@ The recommendation engine uses **content-based filtering** with the following ap
 3. **Ranking & Filtering**
    - Exclude already-selected movies
    - Sort by combined similarity score
-   - Return top N recommendations
-
-### Example
-
-If you select:
-- "Inception" (2010)
-- "Interstellar" (2014)
-- "The Prestige" (2006)
-
-The app will:
-1. Identify common themes (Christopher Nolan, complex narratives, sci-fi)
-2. Calculate similarity to all movies in database
-3. Recommend similar films like "Arrival", "Shutter Island", "Memento"
+   - Return top 5 recommendations with explanations
 
 ## 🏗️ Project Structure
 
 ```
 movie-recommender/
-├── app.py                  # Main Streamlit application
-├── recommender.py          # Recommendation engine logic
-├── data_loader.py          # TMDB API integration
-├── utils.py                # Helper functions
-├── requirements.txt        # Python dependencies
-├── README.md              # This file
-├── .env.example           # Environment variables template
-├── .streamlit/
-│   └── config.toml        # Streamlit configuration
-└── tests/                 # Unit tests (optional)
-    └── test_recommender.py
+├── cinematch-js/           # Static JavaScript version
+│   ├── index.html          # Main HTML page
+│   ├── styles.css          # Dark theme styling
+│   ├── app.js              # UI interactions
+│   ├── recommender.js      # TF-IDF recommendation engine
+│   └── movies_cache.json   # 4500+ movie database
+├── .github/workflows/
+│   └── update-cache.yml    # Weekly auto-update workflow
+├── build_cache.py          # Script to refresh movie database
+├── app.py                  # Streamlit version (legacy)
+├── recommender.py          # Python recommendation engine
+└── README.md
 ```
-
-## 🧪 Testing
-
-Run unit tests:
-```bash
-pytest tests/
-```
-
-Test the app with diverse movie selections:
-- Single movie input
-- 5 movies from different genres
-- Movies from same franchise
-- Obscure titles
-
-## 📈 Performance
-
-- **Initial load**: < 3 seconds (with caching)
-- **Recommendation generation**: < 2 seconds
-- **Dataset size**: 500 movies (configurable)
-- **API calls**: Cached for 1 hour
 
 ## 🚀 Deployment
 
-### Streamlit Community Cloud (Recommended)
+### Vercel (Recommended)
 
-1. Push code to GitHub
-2. Go to [share.streamlit.io](https://share.streamlit.io)
-3. Deploy your repository
-4. Add `TMDB_API_KEY` as a secret in the dashboard
+1. Push the `cinematch-js` folder to GitHub
+2. Connect to Vercel
+3. Set root directory to `cinematch-js`
+4. Deploy - no build step needed!
 
-### Alternative Platforms
+### GitHub Pages
 
-- **Heroku**: Use `setup.sh` and `Procfile`
-- **AWS/GCP**: Deploy with Docker
-- **Vercel**: Use serverless deployment
+1. Go to repo Settings → Pages
+2. Set source to `cinematch-js` folder
+3. Save and deploy
 
-## 🎨 Customization
+### Automated Updates
 
-### Add New Features
+The GitHub Actions workflow runs weekly to fetch new movies. Add your `TMDB_API_KEY` as a repository secret for it to work.
 
-1. **Mood Filters** (Phase 3)
-   - Edit `app.py` to add checkboxes for moods
-   - Update `recommender.py` to filter by mood tags
+## 📈 Performance
 
-2. **Data Visualizations**
-   - Add Plotly charts to show genre distributions
-   - Compare user preferences vs. recommendations
-
-3. **User Accounts**
-   - Integrate Streamlit authentication
-   - Save user preferences and history
-
-### Modify Algorithm
-
-Edit `recommender.py` to adjust:
-- **Feature weights**: Change the 40/30/15/15 split
-- **Similarity metric**: Try Pearson correlation instead of cosine
-- **Additional features**: Add movie runtime, budget, keywords
+- **Initial load**: ~2 seconds (4.5MB database)
+- **Recommendation generation**: < 1 second
+- **Database**: 4,500+ movies with weekly updates
+- **No server required**: Static files only
 
 ## 📝 Future Enhancements
 
 - [ ] Collaborative filtering (user-based recommendations)
-- [ ] Hybrid approach (content + collaborative)
-- [ ] Movie watchlist functionality
-- [ ] Export recommendations to PDF
-- [ ] Integration with streaming services (show where to watch)
+- [ ] Integration with streaming services
 - [ ] Multi-language support
-
-## 🤝 Contributing
-
-Contributions are welcome! Please:
-
-1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit changes (`git commit -m 'Add AmazingFeature'`)
-4. Push to branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+- [ ] Mobile app version
 
 ## 📄 License
 
-This project is licensed under the MIT License - see [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## 🙏 Acknowledgments
 
 - [TMDB](https://www.themoviedb.org/) for the excellent movie database API
-- [Streamlit](https://streamlit.io/) for the intuitive web framework
-- [scikit-learn](https://scikit-learn.org/) for ML tools
-
-## 📧 Contact
-
-**Your Name**
-- Portfolio: [yourportfolio.com](https://yourportfolio.com)
-- LinkedIn: [linkedin.com/in/yourprofile](https://linkedin.com/in/yourprofile)
-- GitHub: [github.com/yourusername](https://github.com/yourusername)
+- Data refreshed automatically via GitHub Actions
 
 ---
 
