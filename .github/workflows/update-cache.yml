@@ -9,6 +9,8 @@ on:
 jobs:
   update-cache:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write  # Required to push cache updates
     
     steps:
       - name: Checkout repository
